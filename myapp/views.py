@@ -34,7 +34,7 @@ def home(request):
             margin: auto;
         ">
 
-            <h2 style="color: #00e676;">✅ Application Running</h2>
+            <h2 style="color: #00e676;">✅ Application is Running</h2>
 
             <p><b>🌐 Host:</b> {hostname}</p>
             <p><b>⏱ Time:</b> {current_time}</p>
