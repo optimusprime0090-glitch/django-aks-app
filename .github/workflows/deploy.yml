@@ -36,3 +36,15 @@ jobs:
       run: |
         kubectl set image deployment/django-app \
           django-app=shivam20012004/django-app:${{ github.sha }}
+
+    - name: Wait for Rollout
+      run: |
+        kubectl rollout status deployment/django-app
+
+    - name: Get External IP
+      run: |
+        echo "=========================================="
+        echo "🚀 Application is Live at:"
+        kubectl get service django-service --output jsonpath='{.status.loadBalancer.ingress[0].ip}'
+        echo ""
+        echo "=========================================="
