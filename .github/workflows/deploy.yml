@@ -12,19 +12,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
+    - name: Docker Hub Login
+      run: |
+        echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Build & Push Docker Image
+      run: |
+        docker build -t shivam20012004/django-app:${{ github.sha }} .
+        docker push shivam20012004/django-app:${{ github.sha }}
+
     - name: Azure Login
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-    - name: Login to ACR
-      run: |
-        az acr login --name ${{ secrets.ACR_NAME }}
-
-    - name: Build & Push Docker Image
-      run: |
-        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/django-app:${{ github.sha }} .
-        docker push ${{ secrets.ACR_LOGIN_SERVER }}/django-app:${{ github.sha }}
 
     - name: Get AKS Credentials
       run: |
@@ -35,4 +35,4 @@ jobs:
     - name: Deploy to AKS
       run: |
         kubectl set image deployment/django-app \
-          django-app=${{ secrets.ACR_LOGIN_SERVER }}/django-app:${{ github.sha }}
+          django-app=shivam20012004/django-app:${{ github.sha }}
