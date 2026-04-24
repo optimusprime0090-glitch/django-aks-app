@@ -1,55 +1,56 @@
 from django.http import HttpResponse
+import socket
+import datetime
+import os
 
 def home(request):
-    return HttpResponse("""
-        <html>
-        <head>
-            <title>Django on AKS</title>
-        </head>
-        <body style="
-            font-family: 'Segoe UI', Arial, sans-serif;
-            text-align: center;
-            margin-top: 80px;
-            background: linear-gradient(to right, #e3f2fd, #ffffff);
+    hostname = socket.gethostname()
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Env variables (CI/CD se set karega)
+    version = os.getenv("APP_VERSION", "v1.0")
+    environment = os.getenv("ENVIRONMENT", "Development")
+
+    return HttpResponse(f"""
+    <html>
+    <head>
+        <title>Cloud Dashboard</title>
+    </head>
+    <body style="
+        font-family: 'Segoe UI';
+        background: linear-gradient(to right, #141E30, #243B55);
+        color: white;
+        text-align: center;
+        margin-top: 50px;
+    ">
+
+        <h1>🚀 Cloud Status Dashboard</h1>
+
+        <div style="
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 12px;
+            width: 50%;
+            margin: auto;
         ">
-            <div style="
-                background: white;
-                padding: 40px;
-                margin: auto;
-                width: 60%;
-                border-radius: 12px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            ">
-                <h1 style="color: #1976D2; font-size: 36px;">
-                    🚀 Django App Deployed on AKS
-                </h1>
 
-                <p style="font-size: 20px; color: #555;">
-                    This application is successfully deployed using a modern DevOps pipeline.
-                </p>
+            <h2 style="color: #00e676;">✅ Application Running</h2>
 
-                <hr style="margin: 20px 0;">
+            <p><b>🌐 Host:</b> {hostname}</p>
+            <p><b>⏱ Time:</b> {current_time}</p>
+            <p><b>📦 Version:</b> {version}</p>
+            <p><b>🌍 Environment:</b> {environment}</p>
 
-                <p style="font-size: 18px; color: #333;">
-                    ⚙️ <b>Technologies Used:</b><br><br>
-                    GitHub Actions (CI/CD) <br>
-                    Azure Container Registry (ACR) <br>
-                    Azure Kubernetes Service (AKS)
-                </p>
+        </div>
 
-                <p style="
-                    margin-top: 20px;
-                    font-size: 18px;
-                    color: green;
-                    font-weight: bold;
-                ">
-                    ✅ Deployment Successful | Pipeline Running Smoothly
-                </p>
+        <p style="margin-top: 30px; color: #ccc;">
+            Powered by Django + AKS + CI/CD 🚀
+        </p>
 
-                <p style="margin-top: 30px; font-size: 14px; color: gray;">
-                    Built & deployed by Cloud Engineer 🚀
-                </p>
-            </div>
-        </body>
-        </html>
+    </body>
+    </html>
     """)
+
+
+def health(request):
+    return HttpResponse("OK", status=200)
