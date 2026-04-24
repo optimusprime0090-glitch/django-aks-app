@@ -1,0 +1,38 @@
+name: Django AKS Deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Login to ACR
+      run: |
+        az acr login --name ${{ secrets.ACR_NAME }}
+
+    - name: Build & Push Docker Image
+      run: |
+        docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/django-app:${{ github.sha }} .
+        docker push ${{ secrets.ACR_LOGIN_SERVER }}/django-app:${{ github.sha }}
+
+    - name: Get AKS Credentials
+      run: |
+        az aks get-credentials \
+          --resource-group ${{ secrets.RESOURCE_GROUP }} \
+          --name ${{ secrets.AKS_CLUSTER }}
+
+    - name: Deploy to AKS
+      run: |
+        kubectl set image deployment/django-app \
+          django-app=${{ secrets.ACR_LOGIN_SERVER }}/django-app:${{ github.sha }}
