@@ -12,6 +12,8 @@ spec:
       labels:
         app: django-app
     spec:
+      imagePullSecrets:
+      - name: acr-secret
       containers:
       - name: django-app
         image: djangoacrshivam.azurecr.io/django-app:latest
